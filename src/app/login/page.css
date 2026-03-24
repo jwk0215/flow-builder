@@ -1,0 +1,134 @@
+.line {
+    max-width: 35rem;
+    width: 100%;
+    height: 0.1rem;
+    background-color: var(--color-border);
+}
+
+
+/* FORM */
+#form {
+    max-width: 35rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+
+#title {
+    margin-bottom: 2rem;
+    
+    & #title-icon {
+        position: relative;
+        width: 5.5rem;
+        aspect-ratio: 1;
+    }
+}
+
+
+#inputs {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    & .input-wrapper {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        & .input-info {
+            position: relative;
+            font-size: 1.5rem;
+
+            & a {
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 1.5rem;
+                color: var(--color-info);
+                opacity: 0.85;
+            }
+            & a:hover {
+                opacity: 1;
+            }
+        }
+        
+        & .input {
+            width: 100%;
+            height: 4.5rem;
+            padding: 0 1rem;
+            font-size: 1.6rem;
+            border-radius: 0.7rem;
+            border: 0.2rem solid var(--color-border);
+        }
+        & .input:focus {
+            border-color: var(--color-info);
+        }
+    }
+}
+
+
+#login-btn {
+    width: 100%;
+    height: 4.5rem;
+    border-radius: 0.7rem;
+    font-size: 1.7rem;
+    background-color: var(--color-info);
+    color: var(--color-title);
+}
+#login-btn.disabled {
+    filter: grayscale(0.9);
+    pointer-events: none;
+}
+
+
+/* OAUTH */
+#oauth-wrapper {
+    width: 100%;
+    max-width: 35rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 2rem;
+
+
+    & .oauth-btn {
+        position: relative;
+        width: 100%;
+        height: 4.5rem;
+        border-radius: 0.7rem;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.7rem;
+
+        & .oauth-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+}
+
+
+/* ETC */
+#etc-wrapper {
+    width: 100%;
+    max-width: 35rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 2rem;
+
+    & .etc {
+        font-size: 1.4rem;
+    }
+    & .etc:hover {
+        color: var(--color-title);
+    }
+}
