@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
  * @param to 
  * @param code 
  */
-export async function sendMail(to: string, code: string) {
+export async function sendMail(to: string, code: number) {
     await transporter.sendMail({
         from: process.env.MAIL_USER,
         to,

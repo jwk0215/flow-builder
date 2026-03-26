@@ -10,14 +10,19 @@ export default function Join() {
     const [ email, setEmail ] = useState('');
     const [ emailInputState, setEmailInputState ] = useState(true);
     const [ emailSendBtnState, setEmailSendBtnState ] = useState(false);
+    const [ emailInfoState, setEmailInfoState ] = useState("");
 
+    const [ expiresAt, setExpiresAt ] = useState('');
+    const [ timeLeft, setTimeLeft ] = useState(0);
     const [ emailCode, setEmailCode ] = useState('');
     const [ emailCodeInputState, setEmailCodeInputState ] = useState(true);
     const [ emailCodeVerifyBtnState, setEmailCodeVerifyBtnState ] = useState(false);
-    const [ expiresAt, setExpiresAt ] = useState('');
-    const [ timeLeft, setTimeLeft ] = useState(0);
+    const [ emailCodeInfoState, setEmailCodeInfoState ] = useState("");
+
 
     const [ password, setPassword ] = useState('');
+    const [ passwordInfoState, setPasswordInfoState ] = useState("");
+
     const [ name, setName ] = useState('');
 
     const [ emailState, setEmailState ] = useState(false);
@@ -29,7 +34,7 @@ export default function Join() {
      * 인증코드 전송
      */
     async function sendMail() {
-        const res = await fetch("/api/login/join/email", {
+        const res = await fetch("/api/login/join/send", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -39,15 +44,25 @@ export default function Join() {
             })
         });
 
-        const data = await res.json();
+        if (!res.ok) {
+            // todo 나중에 팝업 띄우기
+            return;
+        }
         
+        const data = await res.json();
         if (data.success) {
-            setEmailInputState(false);
-            setEmailSendBtnState(false);
+            const expires = new Date(data.expires_at).getTime();
+            const now = new Date().getTime();
+            const diff = Math.max(0, Math.ceil((expires - now) / 1000));
+
+            setTimeLeft(diff);
             setExpiresAt(data.expires_at);
-            
+            setEmailSendBtnState(false);
+            setEmailInputState(false);
+            setEmailInfoState('');
+            setEmailCodeInfoState('');
         } else {
-            // todo 안내문구 변경
+            setEmailInfoState(data.message);
         }
     }
 
@@ -57,7 +72,39 @@ export default function Join() {
      * 인증코드 확인
      */
     async function verifyCode() {
+        if (timeLeft <= 0) {
+            setEmailCodeInfoState("인증코드를 다시 요청해주세요.");
+            return;
+        }
+        
+        const res = await fetch("/api/login/join/verify", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email,
+                code: emailCode
+            })
+        });
 
+        if (!res.ok) {
+            // todo 나중에 popup 띄우기
+            return;
+        }
+        
+        const data = await res.json();
+        if (data.success) {
+            setEmailCodeInputState(false);
+            setEmailCodeVerifyBtnState(false);
+            setEmailCodeInfoState("인증이 완료되었습니다.");
+            setTimeLeft(0);
+            setExpiresAt('');
+            setEmailState(true);
+            
+        } else {
+            setEmailCodeInfoState(data.message);
+        }
     }
     
     
@@ -79,6 +126,7 @@ export default function Join() {
 
     /**
      * useEffect()
+     * 인증코드 타이머
      * [expiredAt]
      */
     useEffect(() => {
@@ -87,13 +135,15 @@ export default function Join() {
         const interval = setInterval(() => {
             const now = new Date().getTime();
             const end = new Date(expiresAt).getTime();
-            const diff = Math.max(0, Math.floor((end - now) / 1000));
+            const diff = Math.max(0, Math.ceil((end - now) / 1000));
 
             setTimeLeft(diff);
 
             if (diff === 0) {
                 clearInterval(interval);
-                // todo 인증코드 전송 버튼 활성화 시키기
+                setEmailSendBtnState(true);
+                setEmailInputState(true);
+                setEmailCodeInfoState("인증코드 시간이 만료되었습니다. 다시 요청해주세요.");
             }
         }, 1000);
 
@@ -146,7 +196,7 @@ export default function Join() {
                     />
 
                     <p className="info-text">
-
+                        {emailInfoState}
                     </p>
                 </div>
 
@@ -184,8 +234,8 @@ export default function Join() {
                         required
                     />
 
-                    <p className="info-text">
-
+                    <p className={emailState ? "info-text verified" : "info-text"}>
+                        {emailCodeInfoState}
                     </p>
                 </div>
 
@@ -212,7 +262,6 @@ export default function Join() {
                 <div className="input-wrapper">
                     <p className="input-info">
                         <span className="main">이름 입력</span>
-                        <span className="sub">다른 사람과 같은 프로젝트를 공유하려면 이름이 필요합니다.</span>
                     </p>
                     
                     <input

@@ -50,6 +50,9 @@
         & .input:focus {
             border-color: var(--color-info);
         }
+        & .input:read-only {
+            opacity: 0.7;
+        }
 
 
         & #email-send-btn {
@@ -78,6 +81,10 @@
 
 .info-text {
     font-size: 1.4rem;
+    color: var(--color-error);
+}
+.info-text.verified {
+    color: var(--color-info);
 }
 
 
